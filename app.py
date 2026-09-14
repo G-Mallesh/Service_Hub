@@ -1446,18 +1446,18 @@ def book_service(service_id):
             url_for("my_bookings")
         )
 
-    # =====================================================
-    # GET - SHOW BOOKING PAGE
-    # =====================================================
-
-    return render_template(
-        "booking.html",
-        service=service,
-        workers=workers
-    )
-    bookings = Booking.query.filter_by(user_id=current_user.id).all()
-    return render_template("my_bookings.html", bookings=bookings)
-
+  # =====================================================
+  # GET - SHOW BOOKING PAGE
+  # =====================================================
+        return render_template(
+        "services.html",
+        services=services,
+        categories=categories,
+        search=search,
+        selected_category=category
+)
+    
+    
 # ============================================================
 # CUSTOMER ADD REVIEW / RATING
 # ============================================================
