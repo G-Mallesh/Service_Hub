@@ -10,13 +10,11 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Services - ServiceHub</title>
+    <title>ServiceHub - Home</title>
 
     <link rel="stylesheet"
-          href="{{ url_for(
-              'static',
-              filename='css/services.css'
-          ) }}">
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
 
 </head>
 
@@ -27,44 +25,28 @@
      NAVBAR
 ===================================================== -->
 
-<header class="navbar">
+<nav class="navbar">
 
     <div class="logo">
         Service<span>Hub</span>
     </div>
 
-    <nav>
+    <div class="nav-links">
 
-        <a href="{{ url_for('index') }}">
+        <a href="{{ url_for('index') }}"
+           class="active">
             Home
         </a>
 
-        <a href="{{ url_for('services') }}"
-           class="active">
+        <a href="{{ url_for('services') }}">
             Services
         </a>
 
         {% if current_user.is_authenticated %}
 
-            {% if current_user.role == "user" %}
-
-                <a href="{{ url_for('my_bookings') }}">
-                    My Bookings
-                </a>
-
-            {% elif current_user.role == "worker" %}
-
-                <a href="{{ url_for('worker_dashboard') }}">
-                    Dashboard
-                </a>
-
-            {% elif current_user.role == "admin" %}
-
-                <a href="{{ url_for('admin_dashboard') }}">
-                    Dashboard
-                </a>
-
-            {% endif %}
+            <a href="{{ url_for('my_bookings') }}">
+                My Bookings
+            </a>
 
             <a href="{{ url_for('logout') }}">
                 Logout
@@ -82,217 +64,308 @@
 
         {% endif %}
 
-    </nav>
+    </div>
 
-</header>
+</nav>
 
 
 <!-- =====================================================
-     PAGE HEADER
+     HERO SECTION
 ===================================================== -->
 
-<main class="services-page">
+<section class="hero">
 
-    <section class="page-header">
+    <div class="hero-content">
 
-        <p class="page-label">
+        <div class="hero-badge">
             SERVICEHUB
-        </p>
+        </div>
 
         <h1>
-            Find the Right Service
+            Find the Right
+            <span>Service</span>
         </h1>
 
         <p>
-            Choose a professional service that matches
-            your needs.
+            Find trusted professionals and book
+            quality services easily in one place.
         </p>
 
-    </section>
+        <div class="hero-buttons">
 
+            <a href="{{ url_for('services') }}"
+               class="primary-btn">
+                Explore Services →
+            </a>
 
-    <!-- =================================================
-         SEARCH
-    ================================================== -->
+            {% if not current_user.is_authenticated %}
 
-    <section class="search-section">
-
-        <form method="GET"
-              action="{{ url_for('services') }}"
-              class="search-form">
-
-            <div class="search-box">
-
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ search|default('') }}"
-                    placeholder="Search for a service..."
-                >
-
-            </div>
-
-
-            <div class="category-box">
-
-                <select name="category">
-
-                    <option value="">
-                        All Categories
-                    </option>
-
-                    {% for category in categories|default([]) %}
-
-                        <option
-                            value="{{ category }}"
-                            {% if selected_category|default('') == category %}
-                                selected
-                            {% endif %}
-                        >
-
-                            {{ category }}
-
-                        </option>
-
-                    {% endfor %}
-
-                </select>
-
-            </div>
-
-
-            <button type="submit"
-                    class="search-button">
-
-                Search
-
-            </button>
-
-        </form>
-
-    </section>
-
-
-    <!-- =================================================
-         SERVICE LIST
-    ================================================== -->
-
-    <section class="services-list">
-
-        {% if services %}
-
-            <div class="service-grid">
-
-                {% for service in services %}
-
-                    <article class="service-card">
-
-                        <div class="service-top">
-
-                            <div class="service-icon">
-                                🛠️
-                            </div>
-
-                            <span class="category">
-
-                                {{ service.category }}
-
-                            </span>
-
-                        </div>
-
-
-                        <h2>
-                            {{ service.name }}
-                        </h2>
-
-
-                        <p class="description">
-
-                            {{ service.description }}
-
-                        </p>
-
-
-                        <div class="service-info">
-
-                            <div>
-
-                                <span class="price-label">
-                                    Starting Price
-                                </span>
-
-                                <strong class="price">
-
-                                    ₹{{ "%.2f"|format(
-                                        service.price
-                                    ) }}
-
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- DETAILS BUTTON -->
-
-                        <a href="{{ url_for(
-                            'service_details',
-                            service_id=service.id
-                        ) }}"
-                           class="details-button">
-
-                            View Details
-
-                        </a>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="no-results">
-
-                <div class="no-results-icon">
-                    🔍
-                </div>
-
-                <h2>
-                    No Services Found
-                </h2>
-
-                <p>
-                    We couldn't find any services matching
-                    your search.
-                </p>
-
-                <a href="{{ url_for('services') }}"
-                   class="reset-button">
-
-                    View All Services
-
+                <a href="{{ url_for('register') }}"
+                   class="secondary-btn">
+                    Get Started
                 </a>
 
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     WHY SERVICEHUB
+===================================================== -->
+
+<section class="features-section">
+
+    <div class="section-header">
+
+        <div class="section-badge">
+            WHY SERVICEHUB
+        </div>
+
+        <h2>
+            Everything You Need,
+            <span>In One Place</span>
+        </h2>
+
+        <p>
+            ServiceHub makes finding and booking
+            professional services simple and convenient.
+        </p>
+
+    </div>
+
+
+    <div class="features-grid">
+
+
+        <!-- FEATURE 1 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🔎
             </div>
 
-        {% endif %}
+            <h3>
+                Find Services
+            </h3>
 
-    </section>
+            <p>
+                Search and discover trusted services
+                that match your requirements.
+            </p>
 
-</main>
+        </div>
+
+
+        <!-- FEATURE 2 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                📅
+            </div>
+
+            <h3>
+                Book Easily
+            </h3>
+
+            <p>
+                Choose your preferred date and time
+                and book your service quickly.
+            </p>
+
+        </div>
+
+
+        <!-- FEATURE 3 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ⭐
+            </div>
+
+            <h3>
+                Rate Services
+            </h3>
+
+            <p>
+                Share your experience and help other
+                customers choose the right service.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     POPULAR SERVICES
+===================================================== -->
+
+<section class="popular-section">
+
+    <div class="section-header">
+
+        <div class="section-badge">
+            POPULAR SERVICES
+        </div>
+
+        <h2>
+            Explore Our
+            <span>Services</span>
+        </h2>
+
+        <p>
+            Choose from our available professional services.
+        </p>
+
+    </div>
+
+
+    {% if services %}
+
+    <div class="home-services-grid">
+
+        {% for service in services %}
+
+        <div class="home-service-card">
+
+
+            <div class="home-service-icon">
+                🛠️
+            </div>
+
+
+            <div class="home-service-category">
+                {{ service.category }}
+            </div>
+
+
+            <h3>
+                {{ service.name }}
+            </h3>
+
+
+            <p>
+                {{ service.description }}
+            </p>
+
+
+            <div class="home-price">
+
+                <span>
+                    Starting Price
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(service.price) }}
+                </strong>
+
+            </div>
+
+
+            <a
+                href="{{ url_for(
+                    'service_details',
+                    service_id=service.id
+                ) }}"
+                class="details-btn"
+            >
+                View Details →
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-services">
+
+        <h3>
+            No services available
+        </h3>
+
+        <p>
+            Services will appear here when they are added.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    <div class="all-services">
+
+        <a href="{{ url_for('services') }}">
+            View All Services →
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     CALL TO ACTION
+===================================================== -->
+
+<section class="cta-section">
+
+    <div class="cta-content">
+
+        <div class="cta-badge">
+            GET STARTED
+        </div>
+
+        <h2>
+            Ready to Find Your
+            <span>Perfect Service?</span>
+        </h2>
+
+        <p>
+            Explore our services and book a trusted
+            professional today.
+        </p>
+
+        <a href="{{ url_for('services') }}"
+           class="cta-button">
+            Browse Services →
+        </a>
+
+    </div>
+
+</section>
 
 
 <!-- =====================================================
      FOOTER
 ===================================================== -->
 
-<footer>
+<footer class="footer">
+
+    <div class="footer-logo">
+        Service<span>Hub</span>
+    </div>
 
     <p>
+        Your trusted platform for finding and booking services.
+    </p>
+
+    <div class="footer-line"></div>
+
+    <p class="copyright">
         © 2026 ServiceHub. All Rights Reserved.
     </p>
 
@@ -300,6 +373,4 @@
 
 
 </body>
-
 </html>
-

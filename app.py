@@ -1010,126 +1010,571 @@ def worker_update_booking_status(booking_id):
         url_for("worker_dashboard")
     )
 # =========================================================
-# WORKER ADD SERVICE
+# CUSTOMER BOOK SERVICE
 # =========================================================
 
-@app.route("/worker/add-service", methods=["GET", "POST"])
+@app.route("/book/<int:service_id>", methods=["GET", "POST"])
 @login_required
-def worker_add_service():
+def book_service(service_id):
 
-    if current_user.role != "worker":
+    if current_user.role != "user":
 
-        flash(
-            "Access denied. Worker access required."
-        )
+        flash("Only customers can book services.")
 
         return redirect(
             url_for("index")
         )
 
-    worker = Worker.query.filter_by(
-        user_id=current_user.id
-    ).first()
+    service = Service.query.get_or_404(
+        service_id
+    )
 
-    if not worker:
-
-        flash(
-            "Worker profile not found."
+    workers = (
+        Worker.query
+        .join(
+            WorkerService,
+            Worker.id == WorkerService.worker_id
         )
-
-        return redirect(
-            url_for("index")
+        .filter(
+            WorkerService.service_id == service.id,
+            Worker.availability == True
         )
+        .all()
+    )
 
     if request.method == "POST":
 
-        name = request.form.get(
-            "name",
+        worker_id_text = request.form.get(
+            "worker_id",
             ""
         ).strip()
 
-        description = request.form.get(
-            "description",
+        booking_date_text = request.form.get(
+            "booking_date",
             ""
         ).strip()
 
-        category = request.form.get(
-            "category",
+        booking_time_text = request.form.get(
+            "booking_time",
             ""
         ).strip()
 
-        price_text = request.form.get(
-            "price",
+        customer_phone = request.form.get(
+            "customer_phone",
             ""
         ).strip()
 
-        if not name or not description or not category or not price_text:
+        customer_location = request.form.get(
+            "customer_location",
+            ""
+        ).strip()
 
-            flash(
-                "Please fill all fields."
-            )
+        customer_latitude_text = request.form.get(
+            "customer_latitude",
+            ""
+        ).strip()
+
+        customer_longitude_text = request.form.get(
+            "customer_longitude",
+            ""
+        ).strip()
+
+
+        # -------------------------------------------------
+        # WORKER
+        # -------------------------------------------------
+
+        if not worker_id_text:
+
+            flash("Please select a worker.")
 
             return redirect(
-                url_for("worker_add_service")
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
             )
 
         try:
 
-            price = float(price_text)
+            worker_id = int(
+                worker_id_text
+            )
 
         except ValueError:
 
-            flash(
-                "Please enter a valid price."
-            )
+            flash("Invalid worker selected.")
 
             return redirect(
-                url_for("worker_add_service")
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
             )
 
-        if price < 0:
 
-            flash(
-                "Price cannot be negative."
-            )
-
-            return redirect(
-                url_for("worker_add_service")
-            )
-
-        # Create service
-
-        service = Service(
-            name=name,
-            description=description,
-            price=price,
-            category=category
+        worker = Worker.query.get(
+            worker_id
         )
 
-        db.session.add(service)
-        db.session.flush()
+        if not worker:
 
-        # Connect service with worker
+            flash("Selected worker was not found.")
 
-        worker_service = WorkerService(
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # CHECK WORKER PROVIDES SERVICE
+        # -------------------------------------------------
+
+        worker_service = WorkerService.query.filter_by(
             worker_id=worker.id,
             service_id=service.id
+        ).first()
+
+        if not worker_service:
+
+            flash(
+                "This worker does not provide the selected service."
+            )
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        if not worker.availability:
+
+            flash(
+                "Selected worker is currently unavailable."
+            )
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # DATE
+        # -------------------------------------------------
+
+        if not booking_date_text:
+
+            flash("Please select a booking date.")
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+        try:
+
+            booking_date = datetime.strptime(
+                booking_date_text,
+                "%Y-%m-%d"
+            ).date()
+
+        except ValueError:
+
+            flash("Invalid booking date.")
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        if booking_date < date.today():
+
+            flash(
+                "Booking date cannot be in the past."
+            )
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # TIME
+        # -------------------------------------------------
+
+        if not booking_time_text:
+
+            flash("Please select a booking time.")
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+        try:
+
+            booking_time = datetime.strptime(
+                booking_time_text,
+                "%H:%M"
+            ).time()
+
+        except ValueError:
+
+            flash("Invalid booking time.")
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # PHONE
+        # -------------------------------------------------
+
+        if not customer_phone:
+
+            flash(
+                "Please enter your phone number."
+            )
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # LOCATION
+        # -------------------------------------------------
+
+        if not customer_location:
+
+            flash(
+                "Please enter your location."
+            )
+
+            return redirect(
+                url_for(
+                    "book_service",
+                    service_id=service.id
+                )
+            )
+
+
+        # -------------------------------------------------
+        # CUSTOMER LATITUDE
+        # -------------------------------------------------
+
+        if customer_latitude_text:
+
+            try:
+
+                customer_latitude = float(
+                    customer_latitude_text
+                )
+
+            except ValueError:
+
+                flash(
+                    "Invalid customer latitude."
+                )
+
+                return redirect(
+                    url_for(
+                        "book_service",
+                        service_id=service.id
+                    )
+                )
+
+            if not -90 <= customer_latitude <= 90:
+
+                flash(
+                    "Latitude must be between -90 and 90."
+                )
+
+                return redirect(
+                    url_for(
+                        "book_service",
+                        service_id=service.id
+                    )
+                )
+
+        else:
+
+            customer_latitude = None
+
+
+        # -------------------------------------------------
+        # CUSTOMER LONGITUDE
+        # -------------------------------------------------
+
+        if customer_longitude_text:
+
+            try:
+
+                customer_longitude = float(
+                    customer_longitude_text
+                )
+
+            except ValueError:
+
+                flash(
+                    "Invalid customer longitude."
+                )
+
+                return redirect(
+                    url_for(
+                        "book_service",
+                        service_id=service.id
+                    )
+                )
+
+            if not -180 <= customer_longitude <= 180:
+
+                flash(
+                    "Longitude must be between -180 and 180."
+                )
+
+                return redirect(
+                    url_for(
+                        "book_service",
+                        service_id=service.id
+                    )
+                )
+
+        else:
+
+            customer_longitude = None
+
+
+        # -------------------------------------------------
+        # CREATE BOOKING
+        # -------------------------------------------------
+
+        booking = Booking(
+
+            user_id=current_user.id,
+
+            service_id=service.id,
+
+            worker_id=worker.id,
+
+            booking_date=booking_date,
+
+            booking_time=booking_time,
+
+            customer_phone=customer_phone,
+
+            customer_location=customer_location,
+
+            customer_latitude=customer_latitude,
+
+            customer_longitude=customer_longitude,
+
+            worker_latitude=worker.latitude,
+
+            worker_longitude=worker.longitude,
+
+            status="Pending"
         )
 
-        db.session.add(worker_service)
+
+        db.session.add(
+            booking
+        )
 
         db.session.commit()
 
+
         flash(
-            "Service added successfully."
+            "Service booking request sent successfully."
         )
 
         return redirect(
-            url_for("worker_dashboard")
+            url_for("my_bookings")
         )
 
+
+    # -----------------------------------------------------
+    # SHOW BOOKING PAGE
+    # -----------------------------------------------------
+
     return render_template(
-        "add_service.html"
+        "booking.html",
+        service=service,
+        workers=workers,
+        today=date.today().isoformat()
+    )
+
+
+# =========================================================
+# CUSTOMER ADD REVIEW / RATING
+# =========================================================
+
+@app.route(
+    "/add-review/<int:booking_id>",
+    methods=["GET", "POST"]
+)
+@login_required
+def add_review(booking_id):
+
+    if current_user.role != "user":
+
+        flash(
+            "Only customers can add reviews."
+        )
+
+        return redirect(
+            url_for("index")
+        )
+
+
+    booking = Booking.query.get_or_404(
+        booking_id
+    )
+
+
+    if booking.user_id != current_user.id:
+
+        flash(
+            "You are not allowed to review this booking."
+        )
+
+        return redirect(
+            url_for("my_bookings")
+        )
+
+
+    if booking.status != "Completed":
+
+        flash(
+            "You can review the service only after it is completed."
+        )
+
+        return redirect(
+            url_for("my_bookings")
+        )
+
+
+    existing_review = Review.query.filter_by(
+        booking_id=booking.id
+    ).first()
+
+
+    if existing_review:
+
+        flash(
+            "You have already reviewed this service."
+        )
+
+        return redirect(
+            url_for("my_bookings")
+        )
+
+
+    if request.method == "POST":
+
+        rating_text = request.form.get(
+            "rating",
+            ""
+        ).strip()
+
+        comment = request.form.get(
+            "comment",
+            ""
+        ).strip()
+
+
+        try:
+
+            rating = int(
+                rating_text
+            )
+
+        except (ValueError, TypeError):
+
+            flash(
+                "Please select a valid rating."
+            )
+
+            return redirect(
+                url_for(
+                    "add_review",
+                    booking_id=booking.id
+                )
+            )
+
+
+        if rating < 1 or rating > 5:
+
+            flash(
+                "Rating must be between 1 and 5 stars."
+            )
+
+            return redirect(
+                url_for(
+                    "add_review",
+                    booking_id=booking.id
+                )
+            )
+
+
+        review = Review(
+
+            rating=rating,
+
+            comment=comment,
+
+            user_id=current_user.id,
+
+            service_id=booking.service_id,
+
+            booking_id=booking.id
+        )
+
+
+        db.session.add(
+            review
+        )
+
+        db.session.commit()
+
+
+        flash(
+            "Rating and review submitted successfully."
+        )
+
+        return redirect(
+            url_for("my_bookings")
+        )
+
+
+    return render_template(
+        "add_review.html",
+        booking=booking
     )
 
 
@@ -1197,354 +1642,10 @@ def services():
         selected_category=category
     )
     
+@app.route("/book/<int:booking_id>", methods=["GET", "POST"])
 
-# =========================================================
-# CUSTOMER BOOK SERVICE
-# =========================================================
-
-@app.route(
-    "/book/<int:service_id>",
-    methods=["GET", "POST"]
-)
-@login_required
-def book_service(service_id):
-
-    service = Service.query.get_or_404(service_id)
-
-    # Only customers can book
-    if current_user.role != "user":
-
-        flash(
-            "Only customers can book services."
-        )
-
-        return redirect(
-            url_for("index")
-        )
-
-    # Find workers who provide this service
-    worker_services = WorkerService.query.filter_by(
-        service_id=service.id
-    ).all()
-
-    workers = []
-
-    for worker_service in worker_services:
-
-        worker = Worker.query.get(
-            worker_service.worker_id
-        )
-
-        if worker and worker.availability:
-
-            workers.append(worker)
-
-    # =====================================================
-    # POST - CREATE BOOKING
-    # =====================================================
-
-    if request.method == "POST":
-
-        worker_id = request.form.get(
-            "worker_id",
-            ""
-        ).strip()
-
-        booking_date = request.form.get(
-            "booking_date",
-            ""
-        ).strip()
-
-        booking_time = request.form.get(
-            "booking_time",
-            ""
-        ).strip()
-
-        customer_phone = request.form.get(
-            "customer_phone",
-            ""
-        ).strip()
-
-        customer_location = request.form.get(
-            "customer_location",
-            ""
-        ).strip()
-
-        # Validate worker
-        if not worker_id:
-
-            flash(
-                "Please select a worker."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        try:
-
-            worker_id = int(worker_id)
-
-        except ValueError:
-
-            flash(
-                "Invalid worker selected."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # Check worker exists
-        worker = Worker.query.get(worker_id)
-
-        if not worker:
-
-            flash(
-                "Selected worker was not found."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # Check worker provides this service
-        worker_service = WorkerService.query.filter_by(
-            worker_id=worker.id,
-            service_id=service.id
-        ).first()
-
-        if not worker_service:
-
-            flash(
-                "This worker does not provide this service."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # Check worker availability
-        if not worker.availability:
-
-            flash(
-                "This worker is currently unavailable."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # Validate date and time
-        if not booking_date or not booking_time:
-
-            flash(
-                "Please select date and time."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        try:
-
-            selected_date = datetime.strptime(
-                booking_date,
-                "%Y-%m-%d"
-            ).date()
-
-            selected_time = datetime.strptime(
-                booking_time,
-                "%H:%M"
-            ).time()
-
-        except ValueError:
-
-            flash(
-                "Invalid date or time."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # Prevent past dates
-        if selected_date < date.today():
-
-            flash(
-                "You cannot select a past date."
-            )
-
-            return redirect(
-                url_for(
-                    "book_service",
-                    service_id=service.id
-                )
-            )
-
-        # =================================================
-        # CREATE BOOKING
-        # =================================================
-
-        booking = Booking(
-
-            user_id=current_user.id,
-
-            service_id=service.id,
-
-            worker_id=worker.id,
-
-            booking_date=selected_date,
-
-            booking_time=selected_time,
-
-            customer_phone=customer_phone,
-
-            customer_location=customer_location,
-
-            customer_latitude=None,
-
-            customer_longitude=None,
-
-            worker_latitude=worker.latitude,
-
-            worker_longitude=worker.longitude,
-
-            status="Pending"
-        )
-
-        db.session.add(booking)
-
-        db.session.commit()
-
-        flash(
-            "Booking request sent successfully."
-        )
-
-        return redirect(
-            url_for("my_bookings")
-        )
-
-  # =====================================================
-  # GET - SHOW BOOKING PAGE
-  # =====================================================
-        return render_template(
-        "services.html",
-        services=services,
-        categories=categories,
-        search=search,
-        selected_category=category
-)
     
     
-# ============================================================
-# CUSTOMER ADD REVIEW / RATING
-# ============================================================
-
-@app.route("/add-review/<int:booking_id>", methods=["GET", "POST"])
-@login_required
-def add_review(booking_id):
-
-    # Only customers can add reviews
-    if current_user.role != "user":
-        flash("Only customers can add reviews.")
-        return redirect(url_for("index"))
-
-    # Get booking
-    booking = Booking.query.get_or_404(booking_id)
-
-    # Make sure this booking belongs to the logged-in customer
-    if booking.user_id != current_user.id:
-        flash("You are not allowed to review this booking.")
-        return redirect(url_for("my_bookings"))
-
-    # Review only after service is completed
-    if booking.status != "Completed":
-        flash("You can review the service only after it is completed.")
-        return redirect(url_for("my_bookings"))
-
-    # Check if already reviewed
-    existing_review = Review.query.filter_by(
-        booking_id=booking.id
-    ).first()
-
-    if existing_review:
-        flash("You have already reviewed this service.")
-        return redirect(url_for("my_bookings"))
-
-    # Handle form submission
-    if request.method == "POST":
-
-        rating_text = request.form.get("rating", "").strip()
-        comment = request.form.get("comment", "").strip()
-
-        # Validate rating
-        try:
-            rating = int(rating_text)
-        except (ValueError, TypeError):
-            flash("Please select a valid rating.")
-            return redirect(
-                url_for(
-                    "add_review",
-                    booking_id=booking.id
-                )
-            )
-
-        # Rating must be 1 to 5
-        if rating < 1 or rating > 5:
-            flash("Rating must be between 1 and 5 stars.")
-            return redirect(
-                url_for(
-                    "add_review",
-                    booking_id=booking.id
-                )
-            )
-
-        # Create review
-        review = Review(
-            rating=rating,
-            comment=comment,
-            user_id=current_user.id,
-            service_id=booking.service_id,
-            booking_id=booking.id
-        )
-
-        db.session.add(review)
-        db.session.commit()
-
-        flash("Rating and review submitted successfully.")
-
-        return redirect(
-            url_for("my_bookings")
-        )
-
-    # Display review page
-    return render_template(
-        "add_review.html",
-        booking=booking
-    )
-
 
 # =========================================================
 # CUSTOMER MY BOOKINGS
