@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Worker Dashboard - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/worker_dashboard.css') }}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('worker_dashboard') }}"
+           class="active">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<section class="dashboard">
+
+    <div class="welcome-box">
+
+        <div>
+
+            <p class="small-title">
+                WORKER DASHBOARD
+            </p>
+
+            <h1>
+                Welcome, {{ current_user.name }}
+            </h1>
+
+            <p>
+                Manage your services and customer bookings
+                from one place.
+            </p>
+
+        </div>
+
+        <div class="availability">
+
+            {% if worker.availability %}
+
+                <span class="status online">
+                    ● Available
+                </span>
+
+            {% else %}
+
+                <span class="status offline">
+                    ● Unavailable
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- STAT BOXES -->
+
+    <div class="stats">
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                🛠️
+            </div>
+
+            <div>
+
+                <h2>
+                    {{ services|length }}
+                </h2>
+
+                <p>
+                    My Services
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div>
+
+                <h2>
+                    {{ bookings|length }}
+                </h2>
+
+                <p>
+                    Bookings
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                📍
+            </div>
+
+            <div>
+
+                <h2>
+                    Location
+                </h2>
+
+                <p>
+                    {{ worker.location }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <p class="section-label">
+                    MY PROFILE
+                </p>
+
+                <h2>
+                    Worker Information
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-grid">
+
+            <div class="profile-item">
+
+                <span>
+                    Name
+                </span>
+
+                <strong>
+                    {{ current_user.name }}
+                </strong>
+
+            </div>
+
+
+            <div class="profile-item">
+
+                <span>
+                    Email
+                </span>
+
+                <strong>
+                    {{ current_user.email }}
+                </strong>
+
+            </div>
+
+
+            <div class="profile-item">
+
+                <span>
+                    Phone
+                </span>
+
+                <strong>
+                    {{ worker.phone }}
+                </strong>
+
+            </div>
+
+
+            <div class="profile-item">
+
+                <span>
+                    Location
+                </span>
+
+                <strong>
+                    {{ worker.location }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SERVICES -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <p class="section-label">
+                    MY SERVICES
+                </p>
+
+                <h2>
+                    Services I Provide
+                </h2>
+
+            </div>
+
+           <a href="{{ url_for('worker_add_service') }}"
+              class="add-service-btn">
+                + Add Service
+          </a>    
+        </div>
+
+
+        {% if services %}
+
+            <div class="service-grid">
+
+                {% for service in services %}
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            🛠️
+                        </div>
+
+                        <h3>
+                            {{ service.name }}
+                        </h3>
+
+                        <p>
+                            {{ service.description }}
+                        </p>
+
+                        <div class="service-bottom">
+
+                            <strong>
+                                ₹{{ service.price }}
+                            </strong>
+
+                            <span>
+                                {{ service.category }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-box">
+
+                <h3>
+                    No services added yet
+                </h3>
+
+                <p>
+                    Add your first service to start receiving bookings.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- BOOKINGS -->
+
+    <div class="section-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <p class="section-label">
+                    CUSTOMER BOOKINGS
+                </p>
+
+                <h2>
+                  <!-- =====================================================
+     BOOKINGS
+===================================================== -->
+
+<section class="dashboard-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <h2>
+                Booking Management
+            </h2>
+
+            <p>
+                Manage your customer bookings and update
+                service progress.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if bookings %}
+
+        <div class="booking-list">
+
+            {% for booking in bookings %}
+
+                <div class="booking-card">
+
+
+                    <!-- ==============================
+                         BOOKING HEADER
+                    =============================== -->
+
+                    <div class="booking-header">
+
+                        <div>
+
+                            <h3>
+                                {{ booking.service.name }}
+                            </h3>
+
+                            <p class="booking-id">
+                                Booking #{{ booking.id }}
+                            </p>
+
+                        </div>
+
+
+                        <span class="status
+                            {% if booking.status == 'Pending' %}
+                                pending
+                            {% elif booking.status == 'Accepted' %}
+                                accepted
+                            {% elif booking.status == 'Rejected' %}
+                                rejected
+                            {% elif booking.status == 'On the Way' %}
+                                on-way
+                            {% elif booking.status == 'Arrived' %}
+                                arrived
+                            {% elif booking.status == 'In Progress' %}
+                                progress
+                            {% elif booking.status == 'Completed' %}
+                                completed
+                            {% endif %}
+                        ">
+
+                            {{ booking.status }}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- ==============================
+                         CUSTOMER INFORMATION
+                    =============================== -->
+
+                    <div class="customer-info">
+
+                        <h4>
+                            Customer Information
+                        </h4>
+
+
+                        <div class="info-grid">
+
+                            <div>
+
+                                <strong>
+                                    Name
+                                </strong>
+
+                                <span>
+                                    {{ booking.user.name }}
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Phone
+                                </strong>
+
+                                <span>
+                                    {{ booking.customer_phone or
+                                       booking.user.phone or
+                                       "Not provided" }}
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Date
+                                </strong>
+
+                                <span>
+                                    {{ booking.booking_date }}
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    Time
+                                </strong>
+
+                                <span>
+                                    {{ booking.booking_time }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="location-info">
+
+                                <strong>
+                                    Customer Location
+                                </strong>
+
+                                <span>
+                                    {{ booking.customer_location
+                                       or "Location not provided" }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==============================
+                         PENDING ACTIONS
+                    =============================== -->
+
+                    {% if booking.status == "Pending" %}
+
+                        <div class="booking-actions">
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_accept_booking',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="accept-btn"
+                                >
+
+                                    ✓ Accept Booking
+
+                                </button>
+
+                            </form>
+
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_reject_booking',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="reject-btn"
+                                >
+
+                                    ✕ Reject Booking
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- ==============================
+                         STATUS UPDATE
+                    =============================== -->
+
+                    {% if booking.status == "Accepted" %}
+
+                        <div class="status-update">
+
+                            <p>
+                                Booking accepted.
+                                Start the service journey.
+                            </p>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_update_booking_status',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="On the Way"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="status-btn"
+                                >
+
+                                    🚗 On the Way
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% elif booking.status == "On the Way" %}
+
+                        <div class="status-update">
+
+                            <p>
+                                You are on the way to the customer.
+                            </p>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_update_booking_status',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="Arrived"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="status-btn"
+                                >
+
+                                    📍 Arrived
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% elif booking.status == "Arrived" %}
+
+                        <div class="status-update">
+
+                            <p>
+                                You have arrived at the customer location.
+                            </p>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_update_booking_status',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="In Progress"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="status-btn"
+                                >
+
+                                    🔧 Start Service
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% elif booking.status == "In Progress" %}
+
+                        <div class="status-update">
+
+                            <p>
+                                Service is currently in progress.
+                            </p>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'worker_update_booking_status',
+                                    booking_id=booking.id
+                                ) }}"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="Completed"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="complete-btn"
+                                >
+
+                                    ✓ Complete Service
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% elif booking.status == "Completed" %}
+
+                        <div class="completed-message">
+
+                            ✓ Service Completed Successfully
+
+                        </div>
+
+                    {% elif booking.status == "Rejected" %}
+
+                        <div class="rejected-message">
+
+                            ✕ This booking was rejected.
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-box">
+
+            <h3>
+                No Bookings Yet
+            </h3>
+
+            <p>
+                Customer booking requests will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>  
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        {% if bookings %}
+
+            <div class="booking-list">
+
+                {% for booking in bookings %}
+
+                    <div class="booking-card">
+
+                        <div>
+
+                            <h3>
+                                {{ booking.service.name }}
+                            </h3>
+
+                            <p>
+                                Customer:
+                                {{ booking.user.name }}
+                            </p>
+
+                            <p>
+                                📞 {{ booking.customer_phone }}
+                            </p>
+
+                            <p>
+                                📍 {{ booking.customer_location }}
+                            </p>
+
+                        </div>
+
+
+                        <div class="booking-right">
+
+                            <p>
+                                {{ booking.booking_date }}
+                            </p>
+
+                            <p>
+                                {{ booking.booking_time }}
+                            </p>
+
+                            <span class="booking-status">
+                                {{ booking.status }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-box">
+
+                <h3>
+                    No bookings yet
+                </h3>
+
+                <p>
+                    Customer bookings will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+</body>
+
+</html>

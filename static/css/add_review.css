@@ -1,0 +1,348 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172554;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    width: 100%;
+    padding: 18px 7%;
+    background: #ffffff;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+    color: #172554;
+}
+
+
+.logo span {
+    color: #2563eb;
+}
+
+
+.nav-links {
+    display: flex;
+    gap: 28px;
+}
+
+
+.nav-links a {
+    text-decoration: none;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+
+.nav-links a:hover {
+    color: #2563eb;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.review-container {
+    min-height: calc(100vh - 150px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 20px;
+}
+
+
+.review-card {
+    width: 100%;
+    max-width: 650px;
+
+    background: #ffffff;
+
+    padding: 40px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 35px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.review-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+
+.small-title {
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+
+.review-header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+
+.review-header p {
+    color: #64748b;
+}
+
+
+/* =========================
+   SERVICE INFO
+========================= */
+
+.service-info {
+    background: #f8fafc;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    margin-bottom: 30px;
+}
+
+
+.category {
+    display: inline-block;
+
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.service-info h2 {
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-size: 22px;
+}
+
+
+.service-info p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+.rating-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+.rating-options label {
+    margin: 0;
+
+    padding: 10px 14px;
+
+    border: 1px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    color: #475569;
+}
+
+
+.rating-options label:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+
+.rating-options input {
+    margin-right: 5px;
+}
+
+
+.rating-options span {
+    color: #f59e0b;
+    letter-spacing: 1px;
+}
+
+
+textarea {
+    width: 100%;
+
+    padding: 14px;
+
+    border: 1px solid #dbe3ef;
+
+    border-radius: 10px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    resize: vertical;
+
+    outline: none;
+}
+
+
+textarea:focus {
+    border-color: #2563eb;
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+.submit-button {
+    width: 100%;
+
+    border: none;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    padding: 14px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.submit-button:hover {
+    background: #1d4ed8;
+}
+
+
+.back-button {
+    display: block;
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #475569;
+
+    text-decoration: none;
+
+    font-size: 14px;
+}
+
+
+.back-button:hover {
+    color: #2563eb;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .review-card {
+        padding: 25px;
+    }
+
+    .review-header h1 {
+        font-size: 27px;
+    }
+
+    .rating-options {
+        flex-direction: column;
+    }
+
+    .rating-options label {
+        width: 100%;
+    }
+}
+

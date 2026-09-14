@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Services - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for(
+              'static',
+              filename='css/services.css'
+          ) }}">
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <nav>
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('services') }}"
+           class="active">
+            Services
+        </a>
+
+        {% if current_user.is_authenticated %}
+
+            {% if current_user.role == "user" %}
+
+                <a href="{{ url_for('my_bookings') }}">
+                    My Bookings
+                </a>
+
+            {% elif current_user.role == "worker" %}
+
+                <a href="{{ url_for('worker_dashboard') }}">
+                    Dashboard
+                </a>
+
+            {% elif current_user.role == "admin" %}
+
+                <a href="{{ url_for('admin_dashboard') }}">
+                    Dashboard
+                </a>
+
+            {% endif %}
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}">
+                Login
+            </a>
+
+            <a href="{{ url_for('register') }}">
+                Register
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
+
+
+<!-- =====================================================
+     PAGE HEADER
+===================================================== -->
+
+<main class="services-page">
+
+    <section class="page-header">
+
+        <p class="page-label">
+            SERVICEHUB
+        </p>
+
+        <h1>
+            Find the Right Service
+        </h1>
+
+        <p>
+            Choose a professional service that matches
+            your needs.
+        </p>
+
+    </section>
+
+
+    <!-- =================================================
+         SEARCH
+    ================================================== -->
+
+    <section class="search-section">
+
+        <form method="GET"
+              action="{{ url_for('services') }}"
+              class="search-form">
+
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search|default('') }}"
+                    placeholder="Search for a service..."
+                >
+
+            </div>
+
+
+            <div class="category-box">
+
+                <select name="category">
+
+                    <option value="">
+                        All Categories
+                    </option>
+
+                    {% for category in categories|default([]) %}
+
+                        <option
+                            value="{{ category }}"
+                            {% if selected_category|default('') == category %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ category }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <button type="submit"
+                    class="search-button">
+
+                Search
+
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <!-- =================================================
+         SERVICE LIST
+    ================================================== -->
+
+    <section class="services-list">
+
+        {% if services %}
+
+            <div class="service-grid">
+
+                {% for service in services %}
+
+                    <article class="service-card">
+
+                        <div class="service-top">
+
+                            <div class="service-icon">
+                                🛠️
+                            </div>
+
+                            <span class="category">
+
+                                {{ service.category }}
+
+                            </span>
+
+                        </div>
+
+
+                        <h2>
+                            {{ service.name }}
+                        </h2>
+
+
+                        <p class="description">
+
+                            {{ service.description }}
+
+                        </p>
+
+
+                        <div class="service-info">
+
+                            <div>
+
+                                <span class="price-label">
+                                    Starting Price
+                                </span>
+
+                                <strong class="price">
+
+                                    ₹{{ "%.2f"|format(
+                                        service.price
+                                    ) }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DETAILS BUTTON -->
+
+                        <a href="{{ url_for(
+                            'service_details',
+                            service_id=service.id
+                        ) }}"
+                           class="details-button">
+
+                            View Details
+
+                        </a>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="no-results">
+
+                <div class="no-results-icon">
+                    🔍
+                </div>
+
+                <h2>
+                    No Services Found
+                </h2>
+
+                <p>
+                    We couldn't find any services matching
+                    your search.
+                </p>
+
+                <a href="{{ url_for('services') }}"
+                   class="reset-button">
+
+                    View All Services
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
+

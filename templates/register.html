@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Register - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/register.css') }}">
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('login') }}">
+            Login
+        </a>
+
+        <a href="{{ url_for('register') }}"
+           class="active">
+            Register
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= REGISTER SECTION ================= -->
+
+<section class="register-section">
+
+    <div class="register-container">
+
+
+        <!-- LEFT SIDE -->
+
+        <div class="register-info">
+
+            <div class="badge">
+                JOIN SERVICEHUB
+            </div>
+
+            <h1>
+                Create Your
+                <span>Account</span>
+            </h1>
+
+            <p class="description">
+                Join ServiceHub and connect with trusted
+                professionals for your everyday service needs.
+            </p>
+
+
+            <div class="benefits">
+
+                <div class="benefit-box">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Find Trusted Services
+                        </h3>
+
+                        <p>
+                            Discover reliable professionals near you.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit-box">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Easy Booking
+                        </h3>
+
+                        <p>
+                            Book services quickly and easily.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit-box">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Become a Worker
+                        </h3>
+
+                        <p>
+                            Offer your services and connect with customers.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- REGISTER CARD -->
+
+        <div class="register-card">
+
+            <div class="card-header">
+
+                <h2>
+                    Create Account
+                </h2>
+
+                <p>
+                    Fill in your details to get started
+                </p>
+
+            </div>
+
+
+            <!-- FLASH MESSAGES -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    <div class="flash-message">
+
+                        {% for message in messages %}
+
+                            <p>
+                                {{ message }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- REGISTER FORM -->
+
+            <form method="POST"
+                  action="{{ url_for('register') }}">
+
+
+                <!-- ACCOUNT TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Account Type
+                    </label>
+
+                    <div class="account-types">
+
+                        <label class="account-option">
+
+                            <input
+                                type="radio"
+                                name="account_type"
+                                value="customer"
+                                checked
+                                onchange="toggleWorkerFields()">
+
+                            <span>
+                                👤 Customer
+                            </span>
+
+                        </label>
+
+
+                        <label class="account-option">
+
+                            <input
+                                type="radio"
+                                name="account_type"
+                                value="worker"
+                                onchange="toggleWorkerFields()">
+
+                            <span>
+                                🛠️ Worker
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        required>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter your phone number">
+
+                </div>
+
+
+                <!-- WORKER LOCATION -->
+
+                <div class="form-group worker-field"
+                     id="workerLocation">
+
+                    <label for="location">
+                        Service Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="Enter your service location">
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required>
+
+                </div>
+
+
+                <button type="submit"
+                        class="register-button">
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+
+            <div class="login-link">
+
+                <span>
+                    Already have an account?
+                </span>
+
+                <a href="{{ url_for('login') }}">
+                    Login here
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+    <span>
+        Your trusted platform for finding and booking services.
+    </span>
+
+</footer>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+function toggleWorkerFields() {
+
+    const workerRadio =
+        document.querySelector(
+            'input[name="account_type"][value="worker"]'
+        );
+
+    const workerLocation =
+        document.getElementById("workerLocation");
+
+    const locationInput =
+        document.getElementById("location");
+
+    if (workerRadio.checked) {
+
+        workerLocation.style.display = "block";
+
+        locationInput.required = true;
+
+    } else {
+
+        workerLocation.style.display = "none";
+
+        locationInput.required = false;
+
+    }
+}
+
+toggleWorkerFields();
+
+</script>
+
+</body>
+
+</html>

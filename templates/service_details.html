@@ -1,0 +1,265 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>{{ service.name }} - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/service_details.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+
+    <nav>
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+
+        <a href="{{ url_for('services') }}">
+            Services
+        </a>
+
+
+        {% if current_user.is_authenticated %}
+
+            {% if current_user.role == "user" %}
+
+                <a href="{{ url_for('my_bookings') }}">
+                    My Bookings
+                </a>
+
+            {% elif current_user.role == "worker" %}
+
+                <a href="{{ url_for('worker_dashboard') }}">
+                    Dashboard
+                </a>
+
+            {% elif current_user.role == "admin" %}
+
+                <a href="{{ url_for('admin_dashboard') }}">
+                    Dashboard
+                </a>
+
+            {% endif %}
+
+
+            <a href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}">
+                Login
+            </a>
+
+            <a href="{{ url_for('register') }}">
+                Register
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     SERVICE DETAILS
+========================= -->
+
+<main class="details-page">
+
+
+    <div class="service-card">
+
+
+        <!-- Service Header -->
+
+        <div class="service-header">
+
+            <span class="category">
+                {{ service.category }}
+            </span>
+
+
+            <h1>
+                {{ service.name }}
+            </h1>
+
+
+            <p class="description">
+                {{ service.description }}
+            </p>
+
+        </div>
+
+
+
+        <!-- Service Information -->
+
+        <div class="service-info">
+
+
+            <div class="info-box">
+
+                <span class="label">
+                    Service Price
+                </span>
+
+
+                <span class="price">
+                    ₹{{ "%.2f"|format(service.price) }}
+                </span>
+
+            </div>
+
+
+
+            <div class="info-box">
+
+                <span class="label">
+                    Category
+                </span>
+
+
+                <span class="value">
+                    {{ service.category }}
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =========================
+             BOOKING SECTION
+        ========================= -->
+
+        <div class="booking-section">
+
+
+            {% if current_user.is_authenticated %}
+
+
+                {% if current_user.role == "user" %}
+
+                    <a href="{{ url_for(
+                        'book_service',
+                        service_id=service.id
+                    ) }}"
+                       class="book-button">
+
+                        Book This Service
+
+                    </a>
+
+
+                {% elif current_user.role == "worker" %}
+
+                    <div class="notice">
+
+                        Workers cannot book services.
+
+                    </div>
+
+
+                {% elif current_user.role == "admin" %}
+
+                    <div class="notice">
+
+                        Admin accounts cannot book services.
+
+                    </div>
+
+
+                {% endif %}
+
+
+            {% else %}
+
+
+                <p class="login-text">
+
+                    Please login to book this service.
+
+                </p>
+
+
+                <a href="{{ url_for('login') }}"
+                   class="book-button">
+
+                    Login to Book
+
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+
+        <!-- Back -->
+
+        <a href="{{ url_for('services') }}"
+           class="back-button">
+
+            ← Back to Services
+
+        </a>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
+```

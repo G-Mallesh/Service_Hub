@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('admin_dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<section class="services-section">
+
+    <div class="section-heading">
+
+        <p>
+            SERVICEHUB ADMIN
+        </p>
+
+        <h2>
+            Admin Dashboard
+        </h2>
+
+        <span>
+            Manage the ServiceHub platform.
+        </span>
+
+    </div>
+
+
+    <div class="service-grid">
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                👤
+            </div>
+
+            <h3>
+                Customers
+            </h3>
+
+            <p>
+                Total registered customers.
+            </p>
+
+            <div class="service-bottom">
+
+                <span class="price">
+                    {{ users|selectattr("role", "equalto", "user")|list|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                👷
+            </div>
+
+            <h3>
+                Workers
+            </h3>
+
+            <p>
+                Registered service workers.
+            </p>
+
+            <div class="service-bottom">
+
+                <span class="price">
+                    {{ workers|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                🛠️
+            </div>
+
+            <h3>
+                Services
+            </h3>
+
+            <p>
+                Services available on ServiceHub.
+            </p>
+
+            <div class="service-bottom">
+
+                <span class="price">
+                    {{ services|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                📅
+            </div>
+
+            <h3>
+                Bookings
+            </h3>
+
+            <p>
+                Total customer bookings.
+            </p>
+
+            <div class="service-bottom">
+
+                <span class="price">
+                    {{ bookings|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="service-card">
+
+            <div class="service-icon">
+                ⭐
+            </div>
+
+            <h3>
+                Reviews
+            </h3>
+
+            <p>
+                Customer ratings and reviews.
+            </p>
+
+            <div class="service-bottom">
+
+                <span class="price">
+                    {{ reviews|length }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div style="text-align:center; margin-top:40px;">
+
+        <h3>
+            Welcome, {{ current_user.name }}
+        </h3>
+
+        <p style="margin-top:10px; color:#64748b;">
+            You are logged in as an administrator.
+        </p>
+
+    </div>
+
+</section>
+
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+</body>
+</html>

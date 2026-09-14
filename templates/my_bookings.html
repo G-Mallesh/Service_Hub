@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/my_bookings.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<header class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <nav>
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('services') }}">
+            Services
+        </a>
+
+        <a href="{{ url_for('my_bookings') }}"
+           class="active">
+            My Bookings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN PAGE
+===================================================== -->
+
+<main class="page">
+
+
+    <div class="page-heading">
+
+        <h1>
+            My Bookings
+        </h1>
+
+        <p>
+            Track your service requests and booking status.
+        </p>
+
+    </div>
+
+
+
+    <!-- =================================================
+         FLASH MESSAGES
+    ================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash-box">
+
+                {% for message in messages %}
+
+                    <p>
+                        {{ message }}
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+
+    <!-- =================================================
+         BOOKINGS
+    ================================================== -->
+
+    {% if bookings %}
+
+        <div class="booking-list">
+
+
+            {% for booking in bookings %}
+
+                <div class="booking-card">
+
+
+                    <!-- =================================
+                         BOOKING HEADER
+                    ================================== -->
+
+                    <div class="booking-header">
+
+                        <div>
+
+                            <h2>
+                                {{ booking.service.name }}
+                            </h2>
+
+                            <p>
+                                Booking #{{ booking.id }}
+                            </p>
+
+                        </div>
+
+
+                        <span class="status
+                            {% if booking.status == 'Pending' %}
+                                pending
+                            {% elif booking.status == 'Accepted' %}
+                                accepted
+                            {% elif booking.status == 'Rejected' %}
+                                rejected
+                            {% elif booking.status == 'On the Way' %}
+                                on-way
+                            {% elif booking.status == 'Arrived' %}
+                                arrived
+                            {% elif booking.status == 'In Progress' %}
+                                progress
+                            {% elif booking.status == 'Completed' %}
+                                completed
+                            {% endif %}
+                        ">
+
+                            {{ booking.status }}
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- =================================
+                         BOOKING DETAILS
+                    ================================== -->
+
+                    <div class="booking-details">
+
+
+                        <div>
+
+                            <strong>
+                                Date
+                            </strong>
+
+                            <span>
+                                {{ booking.booking_date }}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                Time
+                            </strong>
+
+                            <span>
+                                {{ booking.booking_time }}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                Phone
+                            </strong>
+
+                            <span>
+                                {{ booking.customer_phone
+                                   or current_user.phone
+                                   or "Not provided" }}
+                            </span>
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                Location
+                            </strong>
+
+                            <span>
+                                {{ booking.customer_location
+                                   or "Not provided" }}
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =================================
+                         WORKER INFORMATION
+                    ================================== -->
+
+                    {% if booking.worker %}
+
+                        <div class="worker-box">
+
+                            <h3>
+                                Your Worker
+                            </h3>
+
+                            <div class="worker-details">
+
+
+                                <div>
+
+                                    <strong>
+                                        Name
+                                    </strong>
+
+                                    <span>
+                                        {{ booking.worker.user.name }}
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Phone
+                                    </strong>
+
+                                    <span>
+                                        {{ booking.worker.phone }}
+                                    </span>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Location
+                                    </strong>
+
+                                    <span>
+                                        {{ booking.worker.location }}
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                    {% elif booking.status == "Pending" %}
+
+                        <div class="waiting-box">
+
+                            ⏳ Waiting for a worker to accept
+                            your booking.
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================
+                         STATUS TRACKER
+                    ================================== -->
+
+                    {% if booking.status != "Rejected" %}
+
+                        <div class="tracker">
+
+                            <div class="tracker-line"></div>
+
+
+                            <!-- PENDING -->
+
+                            <div class="tracker-step
+                                {% if booking.status in [
+                                    'Pending',
+                                    'Accepted',
+                                    'On the Way',
+                                    'Arrived',
+                                    'In Progress',
+                                    'Completed'
+                                ] %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    1
+                                </div>
+
+                                <span>
+                                    Pending
+                                </span>
+
+                            </div>
+
+
+                            <!-- ACCEPTED -->
+
+                            <div class="tracker-step
+                                {% if booking.status in [
+                                    'Accepted',
+                                    'On the Way',
+                                    'Arrived',
+                                    'In Progress',
+                                    'Completed'
+                                ] %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    2
+                                </div>
+
+                                <span>
+                                    Accepted
+                                </span>
+
+                            </div>
+
+
+                            <!-- ON THE WAY -->
+
+                            <div class="tracker-step
+                                {% if booking.status in [
+                                    'On the Way',
+                                    'Arrived',
+                                    'In Progress',
+                                    'Completed'
+                                ] %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    3
+                                </div>
+
+                                <span>
+                                    On the Way
+                                </span>
+
+                            </div>
+
+
+                            <!-- ARRIVED -->
+
+                            <div class="tracker-step
+                                {% if booking.status in [
+                                    'Arrived',
+                                    'In Progress',
+                                    'Completed'
+                                ] %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    4
+                                </div>
+
+                                <span>
+                                    Arrived
+                                </span>
+
+                            </div>
+
+
+                            <!-- IN PROGRESS -->
+
+                            <div class="tracker-step
+                                {% if booking.status in [
+                                    'In Progress',
+                                    'Completed'
+                                ] %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    5
+                                </div>
+
+                                <span>
+                                    In Progress
+                                </span>
+
+                            </div>
+
+
+                            <!-- COMPLETED -->
+
+                            <div class="tracker-step
+                                {% if booking.status == 'Completed' %}
+                                    active
+                                {% endif %}
+                            ">
+
+                                <div class="circle">
+                                    6
+                                </div>
+
+                                <span>
+                                    Completed
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    {% else %}
+
+                        <div class="rejected-box">
+
+                            ❌ This booking was rejected by the
+                            worker.
+
+                        </div>
+
+                    {% endif %}
+
+
+
+                    <!-- =================================
+                         CURRENT STATUS MESSAGE
+                    ================================== -->
+
+                    <div class="current-status">
+
+
+                        {% if booking.status == "Pending" %}
+
+                            <p>
+                                ⏳ Your booking request has been
+                                sent. Please wait for a worker
+                                to accept it.
+                            </p>
+
+
+                        {% elif booking.status == "Accepted" %}
+
+                            <p>
+                                ✓ Your booking has been accepted
+                                by the worker.
+                            </p>
+
+
+                        {% elif booking.status == "On the Way" %}
+
+                            <p>
+                                🚗 Your worker is on the way.
+                            </p>
+
+
+                        {% elif booking.status == "Arrived" %}
+
+                            <p>
+                                📍 Your worker has arrived at
+                                your location.
+                            </p>
+
+
+                        {% elif booking.status == "In Progress" %}
+
+                            <p>
+                                🔧 Your service is currently
+                                in progress.
+                            </p>
+
+
+                        {% elif booking.status == "Completed" %}
+
+                            <p>
+                                ✓ Your service has been completed.
+                            </p>
+
+
+                        {% elif booking.status == "Rejected" %}
+
+                            <p>
+                                ❌ Your booking was rejected.
+                            </p>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+
+                    <!-- =================================
+                         REVIEW
+                    ================================== -->
+
+                    {% if booking.status == "Completed" %}
+
+                        {% if booking.review %}
+
+                            <div class="reviewed-box">
+
+                                ⭐ You have already reviewed
+                                this service.
+
+                            </div>
+
+                        {% else %}
+
+                            <a href="{{ url_for('add_review', booking_id=booking.id) }}"
+                               class="review-button">
+
+                                ⭐ Add Review
+
+                            </a>
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- =================================
+             NO BOOKINGS
+        ================================== -->
+
+        <div class="empty-box">
+
+            <div class="empty-icon">
+                📋
+            </div>
+
+            <h2>
+                No Bookings Yet
+            </h2>
+
+            <p>
+                You haven't booked any services yet.
+            </p>
+
+            <a href="{{ url_for('services') }}"
+               class="browse-button">
+
+                Browse Services
+
+            </a>
+
+        </div>
+
+
+    {% endif %}
+
+
+</main>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
+

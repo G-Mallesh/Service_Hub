@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Book Service - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for(
+              'static',
+              filename='css/booking.css'
+          ) }}">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <nav>
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('services') }}">
+            Services
+        </a>
+
+        <a href="{{ url_for('my_bookings') }}">
+            My Bookings
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main class="booking-page">
+
+    <div class="booking-card">
+
+        <div class="booking-header">
+
+            <span class="category">
+                {{ service.category }}
+            </span>
+
+            <h1>
+                Book {{ service.name }}
+            </h1>
+
+            <p>
+                Select a worker and choose your preferred
+                date and time.
+            </p>
+
+        </div>
+
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="flash-box">
+
+                    {% for message in messages %}
+
+                        <p>
+                            {{ message }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <form method="POST"
+              action="{{ url_for(
+                  'book_service',
+                  service_id=service.id
+              ) }}">
+
+
+            <!-- SERVICE INFORMATION -->
+
+            <div class="service-summary">
+
+                <div>
+
+                    <span class="summary-label">
+                        Service
+                    </span>
+
+                    <strong>
+                        {{ service.name }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span class="summary-label">
+                        Price
+                    </span>
+
+                    <strong class="price">
+                        ₹{{ "%.2f"|format(service.price) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- WORKER -->
+
+            <div class="form-group">
+
+                <label for="worker_id">
+                    Select Worker
+                </label>
+
+                {% if workers %}
+
+                    <select
+                        id="worker_id"
+                        name="worker_id"
+                        required
+                    >
+
+                        <option value="">
+                            -- Select a Worker --
+                        </option>
+
+                        {% for worker in workers %}
+
+                            <option value="{{ worker.id }}">
+
+                                {{ worker.user.name }}
+
+                                -
+                                {{ worker.location }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                {% else %}
+
+                    <div class="no-worker">
+
+                        <p>
+                            No available workers are currently
+                            providing this service.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- DATE AND TIME -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="booking_date">
+                        Booking Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="booking_date"
+                        name="booking_date"
+                        min="{{ today }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="booking_time">
+                        Booking Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="booking_time"
+                        name="booking_time"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label for="customer_phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="customer_phone"
+                    name="customer_phone"
+                    value="{{ current_user.phone or '' }}"
+                    placeholder="Enter your phone number"
+                >
+
+            </div>
+
+
+            <!-- LOCATION -->
+
+            <div class="form-group">
+
+                <label for="customer_location">
+                    Service Location
+                </label>
+
+                <textarea
+                    id="customer_location"
+                    name="customer_location"
+                    rows="4"
+                    placeholder="Enter the location where you need the service"
+                ></textarea>
+
+            </div>
+
+
+            {% if workers %}
+
+                <button
+                    type="submit"
+                    class="book-button"
+                >
+                    Confirm Booking
+                </button>
+
+            {% else %}
+
+                <button
+                    type="button"
+                    class="book-button disabled"
+                    disabled
+                >
+                    No Workers Available
+                </button>
+
+            {% endif %}
+
+
+            <a
+                href="{{ url_for(
+                    'service_details',
+                    service_id=service.id
+                ) }}"
+                class="cancel-button"
+            >
+                ← Back to Service
+            </a>
+
+        </form>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+</footer>
+
+</body>
+
+</html>

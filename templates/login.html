@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - ServiceHub</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        Service<span>Hub</span>
+    </div>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('index') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('login') }}"
+           class="active">
+            Login
+        </a>
+
+        <a href="{{ url_for('register') }}">
+            Register
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= LOGIN SECTION ================= -->
+
+<section class="login-section">
+
+    <div class="login-container">
+
+
+        <!-- LEFT SIDE -->
+
+        <div class="login-info">
+
+            <p class="small-title">
+                WELCOME BACK
+            </p>
+
+            <h1>
+                Login to
+                <span>ServiceHub</span>
+            </h1>
+
+            <p class="description">
+                Access your account and easily manage
+                your service bookings from one place.
+            </p>
+
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Browse trusted services
+                        </h3>
+
+                        <p>
+                            Find professionals for your everyday needs.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Book services easily
+                        </h3>
+
+                        <p>
+                            Choose a service and schedule it quickly.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="feature">
+
+                    <div class="feature-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <h3>
+                            Manage your bookings
+                        </h3>
+
+                        <p>
+                            Track and manage your service requests.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE LOGIN CARD -->
+
+        <div class="login-card">
+
+            <div class="card-header">
+
+                <h2>
+                    Sign In
+                </h2>
+
+                <p>
+                    Enter your account details below
+                </p>
+
+            </div>
+
+
+            <!-- FLASH MESSAGE -->
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    <div class="flash-message">
+
+                        {% for message in messages %}
+
+                            <p>
+                                {{ message }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <!-- LOGIN FORM -->
+
+            <form method="POST"
+                  action="{{ url_for('login') }}">
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                        autocomplete="email">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password">
+
+                </div>
+
+
+                <button type="submit"
+                        class="login-button">
+
+                    Login
+
+                </button>
+
+            </form>
+
+
+            <div class="register-link">
+
+                <p>
+                    Don't have an account?
+                </p>
+
+                <a href="{{ url_for('register') }}">
+                    Create an account
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+        © 2026 ServiceHub. All Rights Reserved.
+    </p>
+
+    <span>
+        Your trusted platform for finding and booking services.
+    </span>
+
+</footer>
+
+</body>
+
+</html>
